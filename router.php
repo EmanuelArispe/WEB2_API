@@ -1,17 +1,32 @@
 <?php
-    require_once 'config.php';
-    require_once 'libs/router.php';
+    require_once ('config.php');
+    require_once ('libs/router.php');
+    require_once ('./app/controller/wineApiController.php');
+    require_once ('./app/controller/cellarApiController.php');
 
 
     $router = new Router();
 
-    #                 endpoint      verbo     controller           método
-    $router->addRoute('tareas',     'GET',    'ApiController', 'get'   );
-    $router->addRoute('tareas',     'POST',   'ApiController', 'create');
-    $router->addRoute('tareas/:ID', 'GET',    'ApiController', 'get'   );
-    $router->addRoute('tareas/:ID', 'PUT',    'ApiController', 'update');
-    $router->addRoute('tareas/:ID', 'DELETE', 'ApiController', 'delete');
+    #wine             endpoint      verbo    controller           método
+
+    $router->addRoute('wines',     'GET',    'WineApiController', 'getAll'    );
+    $router->addRoute('wines',     'POST',   'WineApiController', 'addwine'   );
+    $router->addRoute('wines/:ID', 'GET',    'WineApiController', 'getWine'   );
+    $router->addRoute('wines/:ID', 'DELETE', 'WineApiController', 'deleteWine');
     
+    /*
+    $router->addRoute('tareas/:ID', 'PUT',    'ApiController', 'update');
+    */
+
+    #cellar           endpoint        verbo     controller             método
+
+    $router->addRoute('cellars',     'GET',    'CellarApiController', 'getAll'      );
+    $router->addRoute('cellars',     'POST',   'CellarApiController', 'addCellar'   );
+    $router->addRoute('cellars/:ID', 'GET',    'CellarApiController', 'getCellar'   );
+    $router->addRoute('cellars/:ID', 'DELETE', 'CellarApiController', 'deleteCellar');
+
+
+
     $router->addRoute('tareas/:ID/:subrecurso', 'GET',    'TaskApiController', 'get'   );
     
 
