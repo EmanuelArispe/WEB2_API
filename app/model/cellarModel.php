@@ -30,7 +30,7 @@ class CellarModel extends Model
         $query = $this->getDB()->prepare("UPDATE `bodegas` SET nombre = ?, pais = ?, provincia = ?, descripcion = ? WHERE id_bodega = ?");
         $query->execute([$nombre, $pais, $provincia, $descripcion, $idCellar]);
 
-        return $this->getDB()->lastInsertId();
+        return $query;
     }
 
     public function deleteCellar($cellar)

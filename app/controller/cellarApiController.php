@@ -1,6 +1,7 @@
 <?php
     require_once ('./app/model/cellarModel.php');
     require_once ('./app/controller/apiController.php');
+    require_once ('./app/helpers/verifyHelper.php');
     class CellarApiController extends ApiController{
         private $model;
 
@@ -9,13 +10,17 @@
             $this->model = new CellarModel();
         }
 
+        function getModel(){
+            return $this->model;
+        }
+
         function getAll(){
-            $this->getView()->response($this->model->getAllCellar(),200);
+            $this->getView()->response($this->getModel()->getAllCellar(),200);
         }
 
         function getCellar($params = []){
             
-            $cellar = $this->model->getCellar($params[':ID']);
+            $cellar = $this->getModel()->getCellar($params[':ID']);
             if(!empty($cellar)){
                 $this->getView()->response($cellar,200);
             }else{
@@ -25,33 +30,68 @@
 
         function deleteCellar($params = []){
             $id = $params[':ID'];
-            $cellar = $this->model->getCellar($id);
+            $cellar = $this->getModel()->getCellar($id);           
 
             if(!empty($cellar)){
-                //$this->model->deleteCellar($id);
+                $this->getModel()->deleteCellar($id);
                 $this->getView()->response(['msg' => 'Se elimino con exito el ID = '.$id], 200);
             }else{
                 $this->getView()->response(['msg' => 'No se puedo eliminar el ID = '.$id.' No existe'], 404);
             }
         }
 
-        //FANTA HACER CONTROL DE DATOS DE LA DOC A AGREGAR funcion AddWine
 
-        function addCellar($params = []){
+        function addCellar(){
             $body = $this->getData();
-    
-            if (!empty($body)) {
-    
-                $nombre = $body->nombre;
-                $pais = $body-> pais;
-                $provincia = $body->provincia;
-                $descripcion = $body->descripcion;
-    
-                $id = $this->model->addCellar($nombre, $pais, $provincia, $descripcion);
-                $this->getView()->response(['msg' => 'La bodega fue creado con exito con el ID = ' . $id], 201);
-    
-            } else {
+            
+            if(!VerifyHelpers::verifyData($body)){
                 $this->getView()->response(['msg' => 'No hay elementos para agregar'], 404);
+                return;
+            }
+
+            $nombre = $body->nombre;
+            $pais = $body-> pais;
+            $provincia = $body->provincia;
+            $descripcion = $body->descripcion;
+    
+            $id = $this->getModel()->addCellar($nombre, $pais, $provincia, $descripcion);
+            if(!empty($id)){
+                $this->getView()->response(['msg' => 'La bodega fue creada con exito con el ID = ' . $id], 201);
+            }else {
+                $this->getView()->response(['msg' => 'Falla en la actualizacion del ID: ' . $id], 500);
             }
         }
+
+    function upDateCellar($params = []) {
+        $id = $params[':ID'] ?? null;
+    
+        if (empty($id)) {
+            $this->getView()->response(['msg' => 'ID  vacio'], 404);
+            return;
+        }
+    
+        $cellar = $this->getModel()->getCellar($id);
+    
+        if (empty($cellar)) {
+            $this->getView()->response(['msg' => 'No se puedo actualizar el ID = ' . $id . ' No existe'], 404);
+            return;
+        }
+    
+        $body = $this->getData();
+        $nombre = $body->nombre ?? $cellar->nombre;
+        $pais = $body->pais ?? $cellar->pais;
+        $provincia = $body->provincia ?? $cellar->provincia;
+        $descripcion = $body->descripcion ?? $cellar->descripcion;
+        
+
+        $result = $this->getModel()->upDateCellar($nombre, $pais, $provincia, $descripcion, $id);
+    
+        if ($result) {
+            $this->getView()->response(['msg' => 'La bodega ID = ' . $id . ' fue actualizada con exito'], 200);
+        } else {
+            $this->getView()->response(['msg' => 'Falla en la actualizacion del ID: ' . $id], 500);
+        }
     }
+
+} 
+
