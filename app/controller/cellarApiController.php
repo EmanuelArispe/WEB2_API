@@ -25,7 +25,8 @@
         function getAll(){
             $addOrder = VerifyHelpers::queryOrder($_GET,$this->getModel()->getColumns(MYSQL_TABLECAT));
             $addpagination = VerifyHelpers::queryPagination($_GET, $this->getModel()->getContElem(MYSQL_TABLECAT));
-            $this->getView()->response($this->getModel()->getAllCellar($addOrder,$addpagination),200);
+            $addFilter = VerifyHelpers::queryFilter($_GET, $this->getModel()->getColumns(MYSQL_TABLECAT));
+            $this->getView()->response($this->getModel()->getAllCellar($addOrder,$addpagination,$addFilter),200);
         }
 
         function getCellar($params = []){
@@ -40,7 +41,8 @@
 
         function deleteCellar($params = []){
             $id = $params[':ID'];
-            $cellar = $this->getModel()->getCellar($id);           
+            $cellar = $this->getModel()->getCellar($id);
+
 
             if(!empty($cellar)){
                 $this->getModel()->deleteCellar($id);

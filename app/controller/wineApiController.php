@@ -4,8 +4,8 @@ require_once('./app/controller/apiController.php');
 require_once('./app/helpers/verifyHelper.php');
 require_once('./app/model/cellarModel.php');
 require_once('./app/helpers/authHelper.php');
-class WineApiController extends ApiController
-{
+
+class WineApiController extends ApiController{
     private $model;
     private $modelCellar;
     private $authHelper;
@@ -29,9 +29,7 @@ class WineApiController extends ApiController
         return $this->authHelper;
     }
 
-    function getAll(){
-
-        
+    function getAll(){      
         $addOrder = VerifyHelpers::queryOrder($_GET, $this->getModel()->getColumns(MYSQL_TABLEPROD));
 
         $addpagination = VerifyHelpers::queryPagination($_GET, $this->getModel()->getContElem(MYSQL_TABLEPROD));
@@ -42,7 +40,6 @@ class WineApiController extends ApiController
     }
 
     function getWine($params = []){
-
         $wine = $this->getModel()->getWine($params[':ID']);
         if (!empty($wine)) {
             $this->getView()->response($wine, 200);
@@ -51,8 +48,7 @@ class WineApiController extends ApiController
         }
     }
 
-    function deleteWine($params = []){
-        
+    function deleteWine($params = []){       
         $id = $params[':ID'];
         $wine = $this->getModel()->getWine($id);
 

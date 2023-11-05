@@ -16,7 +16,7 @@ class VerifyHelpers{
 
         if((!isset($data['sort'])|| empty($data['sort'])) && 
             (!isset($data['order'])|| empty($data['order']))){
-                return 'ORDER BY id ASC';
+                return ' ';
             }
 
         $sort = $data['sort'];
@@ -28,7 +28,7 @@ class VerifyHelpers{
                 return " ORDER BY ".$sort. " ".$order;
 
         }else{
-            return " ORDER BY ID ASC ";
+            return " ";
         }
 
     }

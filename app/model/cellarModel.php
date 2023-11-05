@@ -1,12 +1,10 @@
 <?php
 
-class CellarModel extends Model
-{
+class CellarModel extends Model{
 
     
-    public function getAllCellar($addOrder, $addpagination)
-    {
-        $query = $this->getDB()->prepare("SELECT * FROM `bodegas` $addOrder $addpagination");
+    public function getAllCellar($addOrder, $addpagination,$addFilter){
+        $query = $this->getDB()->prepare("SELECT * FROM `bodegas` $addFilter $addOrder $addpagination");
         $query->execute();
 
         $wineCellar = $query->fetchAll(PDO::FETCH_OBJ);
@@ -15,8 +13,7 @@ class CellarModel extends Model
     }
 
 
-    public function getCellar($cellar)
-    {
+    public function getCellar($cellar){
         $query = $this->getDB()->prepare("SELECT * FROM `bodegas` WHERE id_bodega = ?");
         $query->execute([$cellar]);
 
@@ -25,16 +22,14 @@ class CellarModel extends Model
         return $wineCellar;
     }
 
-    public function upDateCellar($nombre, $pais, $provincia, $descripcion, $idCellar)
-    {
+    public function upDateCellar($nombre, $pais, $provincia, $descripcion, $idCellar){
         $query = $this->getDB()->prepare("UPDATE `bodegas` SET nombre = ?, pais = ?, provincia = ?, descripcion = ? WHERE id_bodega = ?");
         $query->execute([$nombre, $pais, $provincia, $descripcion, $idCellar]);
 
         return $query;
     }
 
-    public function deleteCellar($cellar)
-    {
+    public function deleteCellar($cellar){
         $query = $this->getDB()->prepare("DELETE FROM `bodegas` WHERE id_bodega = ?");
         $query->execute([$cellar]);
 
@@ -42,8 +37,7 @@ class CellarModel extends Model
     }
 
 
-    public function addCellar($nombre, $pais, $provincia, $descripcion)
-    {
+    public function addCellar($nombre, $pais, $provincia, $descripcion){
         $query = $this->getDB()->prepare("INSERT INTO `bodegas`(nombre, pais, provincia, descripcion) VALUES (?, ?, ?, ?)");
         $query->execute([$nombre, $pais, $provincia, $descripcion]);
 
