@@ -3,6 +3,7 @@
     require_once ('libs/router.php');
     require_once ('./app/controller/wineApiController.php');
     require_once ('./app/controller/cellarApiController.php');
+    require_once ('./app/controller/userApiController.php');
 
 
     $router = new Router();
@@ -23,6 +24,8 @@
     $router->addRoute('cellars/:ID', 'GET',    'CellarApiController', 'getCellar'   );
     $router->addRoute('cellars/:ID', 'PUT',    'CellarApiController', 'upDateCellar');
     $router->addRoute('cellars/:ID', 'DELETE', 'CellarApiController', 'deleteCellar');
+
+    $router->addRoute('user/token',  'GET',    'UserApiController',   'getToken');
 
     
 

@@ -3,15 +3,18 @@ require_once('./app/model/wineModel.php');
 require_once('./app/controller/apiController.php');
 require_once('./app/helpers/verifyHelper.php');
 require_once('./app/model/cellarModel.php');
+require_once('./app/helpers/authHelper.php');
 class WineApiController extends ApiController
 {
     private $model;
     private $modelCellar;
+    private $authHelper;
 
     function __construct(){
         parent::__construct();
         $this->model = new WineModel();
         $this->modelCellar = new CellarModel();
+        $this->authHelper = new AuthHelper();
     }
 
     function getModel(){
@@ -22,8 +25,20 @@ class WineApiController extends ApiController
         return $this->modelCellar;
     }
 
+    public function getAuthHelper(){
+        return $this->authHelper;
+    }
+
     function getAll(){
-        $this->getView()->response($this->getModel()->getWineList(), 200);
+
+        
+        $addOrder = VerifyHelpers::queryOrder($_GET, $this->getModel()->getColumns(MYSQL_TABLEPROD));
+
+        $addpagination = VerifyHelpers::queryPagination($_GET, $this->getModel()->getContElem(MYSQL_TABLEPROD));
+
+        $addFilter = VerifyHelpers::queryFilter($_GET, $this->getModel()->getColumns(MYSQL_TABLEPROD));
+
+        $this->getView()->response($this->getModel()->getWineList($addOrder,  $addpagination,$addFilter), 200);
     }
 
     function getWine($params = []){
@@ -37,6 +52,7 @@ class WineApiController extends ApiController
     }
 
     function deleteWine($params = []){
+        
         $id = $params[':ID'];
         $wine = $this->getModel()->getWine($id);
 
@@ -50,6 +66,12 @@ class WineApiController extends ApiController
 
 
     function addwine(){
+        $user = $this->getAuthHelper()->currentUser();
+
+        if(!$user){
+            $this->getView()->response(['msg' => 'Usuario no autorizado'],401);
+            return;
+        }
 
         $body = $this->getData();
 
@@ -87,6 +109,14 @@ class WineApiController extends ApiController
 
 
     function upDateWine($params = []) {
+
+        $user = $this->getAuthHelper()->currentUser();
+
+        if(!$user){
+            $this->getView()->response(['msg' => 'Usuario no autorizado'],401);
+            return;
+        }
+        
         $id = $params[':ID'] ?? null;
     
         if (empty($id)) {
@@ -121,4 +151,7 @@ class WineApiController extends ApiController
             $this->getView()->response(['msg' => 'Falla en la actualizacion del ID: ' . $id], 500);
         }
     }
+
+
+
 }

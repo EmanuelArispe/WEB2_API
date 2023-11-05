@@ -2,20 +2,30 @@
     require_once ('./app/model/cellarModel.php');
     require_once ('./app/controller/apiController.php');
     require_once ('./app/helpers/verifyHelper.php');
+    require_once ('./app/helpers/authHelper.php');
     class CellarApiController extends ApiController{
         private $model;
+        private $authHelper;
 
         function __construct(){
             parent::__construct();
             $this->model = new CellarModel();
+            $this->authHelper = new AuthHelper();
         }
 
         function getModel(){
             return $this->model;
         }
 
+        
+    public function getAuthHelper(){
+        return $this->authHelper;
+    }
+
         function getAll(){
-            $this->getView()->response($this->getModel()->getAllCellar(),200);
+            $addOrder = VerifyHelpers::queryOrder($_GET,$this->getModel()->getColumns(MYSQL_TABLECAT));
+            $addpagination = VerifyHelpers::queryPagination($_GET, $this->getModel()->getContElem(MYSQL_TABLECAT));
+            $this->getView()->response($this->getModel()->getAllCellar($addOrder,$addpagination),200);
         }
 
         function getCellar($params = []){
@@ -42,6 +52,12 @@
 
 
         function addCellar(){
+            $user = $this->getAuthHelper()->currentUser();
+
+            if(!$user){
+                $this->getView()->response(['msg' => 'Usuario no autorizado'],401);
+                return;
+            }
             $body = $this->getData();
             
             if(!VerifyHelpers::verifyData($body)){
@@ -63,6 +79,12 @@
         }
 
     function upDateCellar($params = []) {
+        $user = $this->getAuthHelper()->currentUser();
+
+        if(!$user){
+            $this->getView()->response(['msg' => 'Usuario no autorizado'],401);
+            return;
+        }
         $id = $params[':ID'] ?? null;
     
         if (empty($id)) {

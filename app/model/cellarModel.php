@@ -4,9 +4,9 @@ class CellarModel extends Model
 {
 
     
-    public function getAllCellar()
+    public function getAllCellar($addOrder, $addpagination)
     {
-        $query = $this->getDB()->prepare("SELECT * FROM `bodegas`");
+        $query = $this->getDB()->prepare("SELECT * FROM `bodegas` $addOrder $addpagination");
         $query->execute();
 
         $wineCellar = $query->fetchAll(PDO::FETCH_OBJ);
@@ -49,4 +49,6 @@ class CellarModel extends Model
 
         return $this->getDB()->lastInsertId();
     }
+
+
 }

@@ -11,4 +11,22 @@ class Model{
     {
         return $this->db;
     }
+
+    public function getColumns($table){
+      $query = $this->getDB()->prepare("SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = ?");
+      $query->execute([$table]);
+
+      $colums = $query->fetchAll(PDO::FETCH_COLUMN);
+
+      return $colums;
+  }
+
+  public function getContElem($table){
+    $query = $this->getDB()->prepare("SELECT count(*) FROM $table");
+    $query->execute();
+
+    $contElement = $query->fetch(PDO::FETCH_NUM);
+
+      return $contElement;
+  }
 }

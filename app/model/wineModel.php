@@ -4,12 +4,15 @@ class WineModel extends Model
 {
 
 
-    public function getWineList()
+    public function getWineList($addOrder, $addpagination,$addFilter)
     {
-        $query = $this->getDB()->prepare("  SELECT id, vinos.nombre, bodegas.nombre as Bodega, cepa, anio, precio, stock, recomendado
+        $query = $this->getDB()->prepare("  SELECT id, vinos.nombre, bodegas.nombre as bodega, cepa, anio, precio, stock, recomendado
                                             FROM `vinos`
                                             INNER JOIN `bodegas`
-                                            ON vinos.bodega = bodegas.id_bodega");
+                                            ON vinos.bodega = bodegas.id_bodega 
+                                            $addFilter
+                                            $addOrder
+                                            $addpagination");
         $query->execute();
 
         $wines = $query->fetchAll(PDO::FETCH_OBJ);
