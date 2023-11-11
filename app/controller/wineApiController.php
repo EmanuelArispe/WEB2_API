@@ -30,13 +30,34 @@ class WineApiController extends ApiController{
     }
 
     function getAll(){      
-        $addOrder = VerifyHelpers::queryOrder($_GET, $this->getModel()->getColumns(MYSQL_TABLEPROD));
+        $order = VerifyHelpers::queryOrder($_GET);
+        $sort= VerifyHelpers::querySort($_GET,$this->getModel()->getColumns(MYSQL_TABLEPROD));
 
-        $addpagination = VerifyHelpers::queryPagination($_GET, $this->getModel()->getContElem(MYSQL_TABLEPROD));
+        $page = VerifyHelpers::queryPage($_GET, $this->getModel()->getContElem(MYSQL_TABLEPROD));
+        $limit = VerifyHelpers::queryLimit($_GET, $this->getModel()->getContElem(MYSQL_TABLEPROD));
 
-        $addFilter = VerifyHelpers::queryFilter($_GET, $this->getModel()->getColumns(MYSQL_TABLEPROD));
+        $filter = VerifyHelpers::queryFilter($_GET, $this->getModel()->getColumns(MYSQL_TABLEPROD));
+        $value = VerifyHelpers::queryValue($_GET);
+        $operator = VerifyHelpers::queryOperation($_GET);
 
-        $this->getView()->response($this->getModel()->getWineList($addOrder,  $addpagination,$addFilter), 200);
+        var_dump($_GET["value"]);
+        var_dump(is_string($_GET["value"]));
+
+        $arrayParams = array(   "order"     => ($order)      ? $_GET["order"]     : null,
+                                "sort"      => ($sort)       ? $_GET["sort"]      : null,
+                                "page"      => ($page)       ? $_GET["page"]      : null,
+                                "limit"     => ($limit)      ? $_GET["limit"]     : null,
+                                "filter"    => ($filter)     ? $_GET["filter"]    : null,
+                                "value"     => ($value)      ? $_GET["value"]     : null,
+                                "operator"  => ($operator)   ? $_GET["operator"]  : null);
+
+        $items = $this->getModel()->getWineList($arrayParams);
+
+        if(!empty($items)){
+            $this->getView()->response($items,200);
+        }else{
+            $this->getView()->response(['msg' => 'No hay elementos para mostrar'],204);
+        }
     }
 
     function getWine($params = []){

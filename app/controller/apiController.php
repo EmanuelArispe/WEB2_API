@@ -17,4 +17,5 @@
         function getView(){
             return $this->view;
         }
+        
     }

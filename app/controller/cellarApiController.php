@@ -23,10 +23,33 @@
     }
 
         function getAll(){
-            $addOrder = VerifyHelpers::queryOrder($_GET,$this->getModel()->getColumns(MYSQL_TABLECAT));
-            $addpagination = VerifyHelpers::queryPagination($_GET, $this->getModel()->getContElem(MYSQL_TABLECAT));
-            $addFilter = VerifyHelpers::queryFilter($_GET, $this->getModel()->getColumns(MYSQL_TABLECAT));
-            $this->getView()->response($this->getModel()->getAllCellar($addOrder,$addpagination,$addFilter),200);
+
+            $order = VerifyHelpers::queryOrder($_GET);
+            $sort= VerifyHelpers::querySort($_GET,$this->getModel()->getColumns(MYSQL_TABLECAT));
+
+            $page = VerifyHelpers::queryPage($_GET, $this->getModel()->getContElem(MYSQL_TABLECAT));
+            $limit = VerifyHelpers::queryLimit($_GET, $this->getModel()->getContElem(MYSQL_TABLECAT));
+            $filter = VerifyHelpers::queryFilter($_GET, $this->getModel()->getColumns(MYSQL_TABLECAT));
+            $value = VerifyHelpers::queryValue($_GET);
+            $operator = VerifyHelpers::queryOperation($_GET);
+
+            $arrayParams = array(   "order"     => ($order)     ? $_GET["order"]     : null,
+                                    "sort"      => ($sort)      ? $_GET["sort"]      : null,
+                                    "page"      => ($page)      ? $_GET["page"]      : null,
+                                    "limit"     => ($limit)     ? $_GET["limit"]     : null,
+                                    "filter"    => ($filter)    ? $_GET["filter"]    : null,
+                                    "value"     => ($value)     ? $_GET["value"]     : null,
+                                    "operator"  => ($operator)  ? $_GET["operator"]  : null);
+            
+            $items = $this->getModel()->getAllCellar($arrayParams);
+
+            if(!empty($items)){
+                $this->getView()->response($items,200);
+            }else{
+                $this->getView()->response(['msg' => 'No hay elementos para mostrar'],204);
+            }
+
+            
         }
 
         function getCellar($params = []){
@@ -39,19 +62,24 @@
             }
         }
 
-        function deleteCellar($params = []){
-            $id = $params[':ID'];
-            $cellar = $this->getModel()->getCellar($id);
 
-
-            if(!empty($cellar)){
-                $this->getModel()->deleteCellar($id);
-                $this->getView()->response(['msg' => 'Se elimino con exito el ID = '.$id], 200);
+        public function deleteCellar($params = []){
+            if(!empty($params) && is_numeric($params[':id'])){
+                $id=$params[':id'];
+                try{
+                    $deleteCat =$this->getModel()->deleteCellar($id);
+                    if($deleteCat){
+                        $this->getView()->response(['msg' => 'Se elimino con exito el ID = '.$id], 200);
+                    }else{
+                        $this->getView()->response(['msg' => 'No se puedo eliminar el ID = '.$id.' No existe'], 404);
+                    }
+                }catch(PDOException $exc){
+                    $this->getView()->response(['msg' => 'No se puedo elimiar la categoria. Verificar productos asociados '.$exc],400);
+                }
             }else{
-                $this->getView()->response(['msg' => 'No se puedo eliminar el ID = '.$id.' No existe'], 404);
+                $this->getView()->response(['msg' => 'Ingrese los campos correctamente'], 400);
             }
         }
-
 
         function addCellar(){
             $user = $this->getAuthHelper()->currentUser();
@@ -63,7 +91,7 @@
             $body = $this->getData();
             
             if(!VerifyHelpers::verifyData($body)){
-                $this->getView()->response(['msg' => 'No hay elementos para agregar'], 404);
+                $this->getView()->response(['msg' => 'No hay elementos para agregar'], 400);
                 return;
             }
 
@@ -80,6 +108,8 @@
             }
         }
 
+
+
     function upDateCellar($params = []) {
         $user = $this->getAuthHelper()->currentUser();
 
@@ -90,7 +120,7 @@
         $id = $params[':ID'] ?? null;
     
         if (empty($id)) {
-            $this->getView()->response(['msg' => 'ID  vacio'], 404);
+            $this->getView()->response(['msg' => 'Ingrese los campos correctamente'], 404);
             return;
         }
     

@@ -12,60 +12,41 @@ class VerifyHelpers{
         return true;
     }
 
-    public static function queryOrder($data,$colums){
-
-        if((!isset($data['sort'])|| empty($data['sort'])) && 
-            (!isset($data['order'])|| empty($data['order']))){
-                return ' ';
-            }
-
-        $sort = $data['sort'];
-        $order = $data['order'];
-
-
-        if(in_array($sort,$colums) &&
-            (($order == 'DESC') || ($order = 'ASC'))){
-                return " ORDER BY ".$sort. " ".$order;
-
-        }else{
-            return " ";
-        }
-
+    public static function queryOrder($data){
+        return ((isset($data['order'])      || !empty($data['order']))   && 
+                (($data['order'] == 'DESC') || ($data['order'] == 'ASC') ||
+                 ($data['order'] == 'desc') || ($data['order'] == 'asc')));
     }
 
-    public static function queryPagination($data,$contElement){
-        if((!isset($data['page'])|| empty($data['page'])) && 
-            (!isset($data['limit'])|| empty($data['limit']))){
-                return "";
-            }
 
-            $page = $data['page'];
-            $limit = $data['limit'];
-
-            if(($page <= $contElement) && ($limit <=$contElement)){
-                return " LIMIT ".$page.", ".$limit;
-            }else{
-                return "";
-            }
-
+    public static function querySort($data,$colums){
+        return ((isset($data['sort'])|| !empty($data['sort'])) && (in_array($data['sort'],$colums)));
     }
+
+
+    public static function queryPage($data,$contElement){
+        return ((isset($data['page'])|| !empty($data['page'])) && ($data['page'] <= $contElement) && ($data['page'] > 0));
+    }
+
+    public static function queryLimit($data,$contElement){
+        return ((isset($data['limit'])|| !empty($data['limit'])) && ($data['limit'] <=$contElement) && ($data['limit'] > 0));
+    }
+
 
     public static function queryFilter($data,$colums){
-        if((!isset($data['filter'])|| empty($data['filter'])) && 
-        (!isset($data['value'])|| empty($data['value']))){
-            return "";
-        }
+        return ((isset($data['filter'])|| !empty($data['filter'])) && (in_array($data['filter'],$colums)));
+    }
 
-        $filter = $data['filter'];
-        $value = $data['value'];
-        
-        //FALTA VERIFICAR QUE EL VALOR DE VALUE SEA CORRECTO evitar inyeccion
+    public static function queryValue($data){
+        return (isset($data['value'])|| !empty($data['value']));
+    }
 
-        if(in_array($filter,$colums)){
-                return " WHERE ".$filter ." = '" .$value ."' ";
-        }else{
-            return "";
-        }
+    public static function queryOperation($data){
+        return ((isset($data['operator'])    || !empty($data['operator']))  && 
+                (($data['operator'] == '=')  || ($data['operator'] == '>')  ||
+                 ($data['operator'] == '<')  || ($data['operator'] == '<=') || 
+                 ($data['operator'] == '>=') || ($data['operator'] == '<>') || 
+                 ($data['operator'] == 'LIKE')));
     }
 
 }

@@ -4,15 +4,17 @@ class WineModel extends Model
 {
 
 
-    public function getWineList($addOrder, $addpagination,$addFilter)
+    public function getWineList($arrayParams)
     {
+        $queryParams = $this->getQueryParams($arrayParams);
+
         $query = $this->getDB()->prepare("  SELECT id, vinos.nombre, bodegas.nombre as bodega, cepa, anio, precio, stock, recomendado
                                             FROM `vinos`
                                             INNER JOIN `bodegas`
-                                            ON vinos.bodega = bodegas.id_bodega 
-                                            $addFilter
-                                            $addOrder
-                                            $addpagination");
+                                            ON vinos.bodega = bodegas.id_bodega "
+                                            .$queryParams["filter"]
+                                            .$queryParams["order"] 
+                                            .$queryParams["pagination"]); 
         $query->execute();
 
         $wines = $query->fetchAll(PDO::FETCH_OBJ);
@@ -48,6 +50,7 @@ class WineModel extends Model
 
     public function deleteWine($id)
     {
+        
         $query = $this->getDB()->prepare("DELETE FROM `vinos` WHERE id = ?");
         $query->execute([$id]);
 

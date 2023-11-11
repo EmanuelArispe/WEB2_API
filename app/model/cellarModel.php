@@ -3,8 +3,14 @@
 class CellarModel extends Model{
 
     
-    public function getAllCellar($addOrder, $addpagination,$addFilter){
-        $query = $this->getDB()->prepare("SELECT * FROM `bodegas` $addFilter $addOrder $addpagination");
+    public function getAllCellar($arrayParams){
+
+        $queryParams = $this->getQueryParams($arrayParams);
+
+        $query = $this->getDB()->prepare("SELECT * FROM `bodegas` "
+                                                                    .$queryParams["filter"]
+                                                                    .$queryParams["order"] 
+                                                                    .$queryParams["pagination"]);
         $query->execute();
 
         $wineCellar = $query->fetchAll(PDO::FETCH_OBJ);
@@ -44,5 +50,5 @@ class CellarModel extends Model{
         return $this->getDB()->lastInsertId();
     }
 
-
+    
 }
