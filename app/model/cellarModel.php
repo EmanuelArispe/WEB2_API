@@ -5,7 +5,7 @@ class CellarModel extends Model{
     
     public function getAllCellar($arrayParams){
 
-        $queryParams = $this->getQueryParams($arrayParams);
+        $queryParams = $this->getQueryParams($arrayParams, MYSQL_TABLECAT);
 
         $query = $this->getDB()->prepare("SELECT * FROM `bodegas` "
                                                                     .$queryParams["filter"]
@@ -28,9 +28,9 @@ class CellarModel extends Model{
         return $wineCellar;
     }
 
-    public function upDateCellar($nombre, $pais, $provincia, $descripcion, $idCellar){
-        $query = $this->getDB()->prepare("UPDATE `bodegas` SET nombre = ?, pais = ?, provincia = ?, descripcion = ? WHERE id_bodega = ?");
-        $query->execute([$nombre, $pais, $provincia, $descripcion, $idCellar]);
+    public function upDateCellar($bodega, $pais, $provincia, $descripcion, $idCellar){
+        $query = $this->getDB()->prepare("UPDATE `bodegas` SET bodega = ?, pais = ?, provincia = ?, descripcion = ? WHERE id_bodega = ?");
+        $query->execute([$bodega, $pais, $provincia, $descripcion, $idCellar]);
 
         return $query;
     }
@@ -43,9 +43,9 @@ class CellarModel extends Model{
     }
 
 
-    public function addCellar($nombre, $pais, $provincia, $descripcion){
-        $query = $this->getDB()->prepare("INSERT INTO `bodegas`(nombre, pais, provincia, descripcion) VALUES (?, ?, ?, ?)");
-        $query->execute([$nombre, $pais, $provincia, $descripcion]);
+    public function addCellar($bodega, $pais, $provincia, $descripcion){
+        $query = $this->getDB()->prepare("INSERT INTO `bodegas`(bodega, pais, provincia, descripcion) VALUES (?, ?, ?, ?)");
+        $query->execute([$bodega, $pais, $provincia, $descripcion]);
 
         return $this->getDB()->lastInsertId();
     }

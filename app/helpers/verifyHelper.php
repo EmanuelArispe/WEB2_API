@@ -2,10 +2,9 @@
 <?php
 class VerifyHelpers{
 
-    public static function verifyData($data)
-    {
+    public static function verifyData($data){
         foreach ($data as $elem) {
-            if (!(isset($elem)) || (empty($elem))) {
+            if ((!isset($elem)) || (empty($elem))) {
                 return false;
             }
         }
@@ -24,8 +23,8 @@ class VerifyHelpers{
     }
 
 
-    public static function queryPage($data,$contElement){
-        return ((isset($data['page'])|| !empty($data['page'])) && ($data['page'] <= $contElement) && ($data['page'] > 0));
+    public static function queryElem($data,$contElement){
+        return ((isset($data['elem'])|| !empty($data['elem'])) && ($data['elem'] <= $contElement) && ($data['elem'] > 0));
     }
 
     public static function queryLimit($data,$contElement){

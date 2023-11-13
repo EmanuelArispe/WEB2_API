@@ -27,15 +27,16 @@
             $order = VerifyHelpers::queryOrder($_GET);
             $sort= VerifyHelpers::querySort($_GET,$this->getModel()->getColumns(MYSQL_TABLECAT));
 
-            $page = VerifyHelpers::queryPage($_GET, $this->getModel()->getContElem(MYSQL_TABLECAT));
+            $elem = VerifyHelpers::queryElem($_GET, $this->getModel()->getContElem(MYSQL_TABLECAT));
             $limit = VerifyHelpers::queryLimit($_GET, $this->getModel()->getContElem(MYSQL_TABLECAT));
+
             $filter = VerifyHelpers::queryFilter($_GET, $this->getModel()->getColumns(MYSQL_TABLECAT));
             $value = VerifyHelpers::queryValue($_GET);
             $operator = VerifyHelpers::queryOperation($_GET);
 
             $arrayParams = array(   "order"     => ($order)     ? $_GET["order"]     : null,
                                     "sort"      => ($sort)      ? $_GET["sort"]      : null,
-                                    "page"      => ($page)      ? $_GET["page"]      : null,
+                                    "elem"      => ($elem)      ? $_GET["elem"]      : null,
                                     "limit"     => ($limit)     ? $_GET["limit"]     : null,
                                     "filter"    => ($filter)    ? $_GET["filter"]    : null,
                                     "value"     => ($value)     ? $_GET["value"]     : null,
@@ -64,8 +65,8 @@
 
 
         public function deleteCellar($params = []){
-            if(!empty($params) && is_numeric($params[':id'])){
-                $id=$params[':id'];
+            if(!empty($params) && is_numeric($params[':ID'])){
+                $id=$params[':ID'];
                 try{
                     $deleteCat =$this->getModel()->deleteCellar($id);
                     if($deleteCat){
@@ -95,12 +96,12 @@
                 return;
             }
 
-            $nombre = $body->nombre;
+            $bodega = $body->bodega;
             $pais = $body-> pais;
             $provincia = $body->provincia;
             $descripcion = $body->descripcion;
     
-            $id = $this->getModel()->addCellar($nombre, $pais, $provincia, $descripcion);
+            $id = $this->getModel()->addCellar($bodega, $pais, $provincia, $descripcion);
             if(!empty($id)){
                 $this->getView()->response(['msg' => 'La bodega fue creada con exito con el ID = ' . $id], 201);
             }else {
@@ -132,13 +133,13 @@
         }
     
         $body = $this->getData();
-        $nombre = $body->nombre ?? $cellar->nombre;
+        $bodega = $body->bodega ?? $cellar->bodega;
         $pais = $body->pais ?? $cellar->pais;
         $provincia = $body->provincia ?? $cellar->provincia;
         $descripcion = $body->descripcion ?? $cellar->descripcion;
         
 
-        $result = $this->getModel()->upDateCellar($nombre, $pais, $provincia, $descripcion, $id);
+        $result = $this->getModel()->upDateCellar($bodega, $pais, $provincia, $descripcion, $id);
     
         if ($result) {
             $this->getView()->response(['msg' => 'La bodega ID = ' . $id . ' fue actualizada con exito'], 200);

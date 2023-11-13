@@ -30,41 +30,68 @@ class Model
     return $contElement;
   }
 
-  public function getQueryParams($arrayParams){
+  public function getQueryParams($arrayParams, $table){
     $querryParams = array(
       "filter"     => "",
       "order"      => "",
       "pagination" => ""
     );
+    
+    //control orden
+    $querryParams["order"] = $this->orderBy($arrayParams, $table);
 
+    //control paginado
+    $querryParams["pagination"] = $this->page($arrayParams);
+
+    //control filtro
+    $querryParams["filter"] = $this->filter($arrayParams);
+
+
+
+    return $querryParams;
+  }
+
+  private function orderBy($arrayParams,$table){
     if ($arrayParams["sort"] != null) {
       if ($arrayParams["order"] != null) {
-        $querryParams["order"] = " ORDER BY " . $arrayParams["sort"] . " " . $arrayParams["order"];
+        return " ORDER BY " . $arrayParams["sort"] . " " . $arrayParams["order"];
       } else {
-        $querryParams["order"] = " ORDER BY " . $arrayParams["sort"] . " ASC ";
+        return  " ORDER BY " . $arrayParams["sort"] . " ASC ";
       }
     }
+    return ($table == MYSQL_TABLEPROD) ? " ORDER BY id ASC " : " ORDER BY id_bodega ASC ";
+  }
 
-    if (($arrayParams["page"] != null) && ($arrayParams["limit"] != null)) {
-      $querryParams["pagination"] = " LIMIT " . $arrayParams["page"] . ", " . $arrayParams["limit"];
+  private function page($arrayParams){
+    if (($arrayParams["elem"] != null) && ($arrayParams["limit"] != null)) {
+      return " LIMIT " . $arrayParams["elem"] . ", " . $arrayParams["limit"];
     }
+  }
 
+  private function filter($arrayParams){
+    
     if (($arrayParams["filter"] != null) && ($arrayParams["value"] != null)) {
+      
+      if ($arrayParams["filter"] == "bodega"){
+        $arrayParams["filter"] = "bodegas.".$arrayParams["filter"];
+      }
         switch($arrayParams["operator"]){
           case '<':
           case '>':
           case '=':
           case '<=':
           case '>=':
-          case '<>': 
-            $querryParams["filter"] = " WHERE " .$arrayParams["filter"] ."  " .$arrayParams["operator"] ." " .$arrayParams["value"];
+          case '<>':
+          case 'LIKE': return " WHERE " . $arrayParams["filter"] . "  " . $arrayParams["operator"] . " '" .$arrayParams["value"]. "'";
           break;
-          case 'LIKE': $querryParams["filter"] = " WHERE " . $arrayParams["filter"] . "  " . $arrayParams["operator"] . " '" .$arrayParams["value"]. "'";
+          case "NULL" : return " WHERE " . $arrayParams["filter"] . " = '" . $arrayParams["value"] ."' ";
           break;
-          default : $querryParams["filter"] = " WHERE " . $arrayParams["filter"] . " = '" . $arrayParams["value"] ."' ";
+
+          default : return " WHERE " . $arrayParams["filter"] . " = '" . $arrayParams["value"] ."' ";
           break;
         }
     }
-    return $querryParams;
+
   }
+
 }

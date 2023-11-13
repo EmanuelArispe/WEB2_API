@@ -6,15 +6,17 @@ class WineModel extends Model
 
     public function getWineList($arrayParams)
     {
-        $queryParams = $this->getQueryParams($arrayParams);
+        $queryParams = $this->getQueryParams($arrayParams,MYSQL_TABLEPROD);
 
-        $query = $this->getDB()->prepare("  SELECT id, vinos.nombre, bodegas.nombre as bodega, cepa, anio, precio, stock, recomendado
+
+        $query = $this->getDB()->prepare("  SELECT id, vino, bodegas.bodega, cepa, anio, precio, stock, recomendado
                                             FROM `vinos`
                                             INNER JOIN `bodegas`
                                             ON vinos.bodega = bodegas.id_bodega "
                                             .$queryParams["filter"]
                                             .$queryParams["order"] 
-                                            .$queryParams["pagination"]); 
+                                            .$queryParams["pagination"]
+                                        ); 
         $query->execute();
 
         $wines = $query->fetchAll(PDO::FETCH_OBJ);
@@ -25,7 +27,7 @@ class WineModel extends Model
 
     public function getWine($wine)
     {
-        $query = $this->getDB()->prepare("  SELECT id, vinos.nombre as nombre, bodegas.nombre as bodega, pais, provincia as region, maridaje, cepa, anio, stock, precio, caracteristica, recomendado 
+        $query = $this->getDB()->prepare("  SELECT id, vino, bodegas.bodega, pais, provincia as region, maridaje, cepa, anio, stock, precio, caracteristica, recomendado 
                                             FROM `vinos`
                                             INNER JOIN `bodegas`
                                             ON vinos.bodega = bodegas.id_bodega 
@@ -37,13 +39,13 @@ class WineModel extends Model
         return $wine;
     }
 
-    public function upDateWine($nombre, $bodega, $anio, $maridaje, $cepa, $stock, $precio, $caracteristica, $recomendado, $id)
+    public function upDateWine($vino, $bodega, $anio, $maridaje, $cepa, $stock, $precio, $caracteristica, $recomendado, $id)
     {
 
-        $query = $this->getDB()->prepare("UPDATE `vinos` SET nombre = ?, bodega = ?, anio = ?, maridaje = ?, cepa = ?,
+        $query = $this->getDB()->prepare("UPDATE `vinos` SET vino = ?, bodega = ?, anio = ?, maridaje = ?, cepa = ?,
                                                         stock = ?, precio = ?, caracteristica = ?, recomendado = ? WHERE id = ?");
 
-        $query->execute([$nombre, $bodega, $anio, $maridaje, $cepa, $stock, $precio, $caracteristica, $recomendado, $id]);
+        $query->execute([$vino, $bodega, $anio, $maridaje, $cepa, $stock, $precio, $caracteristica, $recomendado, $id]);
 
         return $query;
     }
@@ -57,12 +59,23 @@ class WineModel extends Model
         return $query;
     }
 
-    public function addWine($nombre, $bodega, $anio, $maridaje, $cepa, $stock, $precio, $caracteristica, $recomendado)
+    public function addWine($arrayValue)
     {
-        $query = $this->getDB()->prepare("INSERT INTO `vinos`(nombre, bodega, anio, maridaje, cepa, stock, precio, caracteristica, recomendado) VALUES (?,?,?,?,?,?,?,?,?)");
-        $query->execute([$nombre, $bodega, $anio, $maridaje, $cepa, $stock, $precio, $caracteristica, $recomendado]);
+        $query = $this->getDB()->prepare("INSERT INTO `vinos`(vino, bodega, anio, maridaje, cepa, stock, precio, caracteristica, recomendado) VALUES (?,?,?,?,?,?,?,?,?)");
+        $query->execute([$arrayValue['vino'], $arrayValue['bodega'], $arrayValue['anio'], $arrayValue['maridaje'], $arrayValue['cepa'], $arrayValue['stock'], 
+                        $arrayValue['precio'], $arrayValue['caracteristica'], $arrayValue['recomendado']]);
 
         return $this->getDB()->lastInsertId();
+    }
+
+    public function getOnlyWine($wine){
+        $query = $this->getDB()->prepare("SELECT * FROM `vinos` WHERE id = ?");
+
+        $query->execute([$wine]);
+
+        $wine = $query->fetch(PDO::FETCH_OBJ);
+
+        return $wine;
     }
 
 }

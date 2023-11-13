@@ -29,7 +29,7 @@ SET time_zone = "+00:00";
 
 CREATE TABLE `bodegas` (
   `id_bodega` int(11) NOT NULL,
-  `nombre` varchar(45) NOT NULL,
+  `bodega` varchar(45) NOT NULL,
   `pais` varchar(45) NOT NULL,
   `provincia` varchar(45) NOT NULL,
   `descripcion` text NOT NULL
@@ -39,7 +39,7 @@ CREATE TABLE `bodegas` (
 -- Dumping data for table `bodegas`
 --
 
-INSERT INTO `bodegas` (`id_bodega`, `nombre`, `pais`, `provincia`, `descripcion`) VALUES
+INSERT INTO `bodegas` (`id_bodega`, `bodega`, `pais`, `provincia`, `descripcion`) VALUES
 (5, 'Catena Zapata', 'Argentina', 'Mendoza', 'Nuestra visión consiste en elaborar vinos intensos e inolvidables, verdaderamente expresivos del terroir. La historia de Catena es la historia del vino argentino.'),
 (6, 'Cordon blanco', 'Argentina', 'Buenos Aires', ' Radicada en Tandil'),
 (7, 'Saletein', 'Argentina', 'Mendoza', 'El objetivo de Bodegas Salentein es claro: elaborar vinos de la más alta calidad, comprometidos con la tierra en la que nacen. Durante su elaboración, Salentein respeta la naturaleza y, al mismo tiempo, se involucra con la comunidad de la zona; porque la gente se convierte en un componente esencial que se refleja en la expresión de los vinos.'),
@@ -77,7 +77,7 @@ INSERT INTO `usuarios` (`id_usuario`, `email`, `password`) VALUES
 
 CREATE TABLE `vinos` (
   `id` int(11) NOT NULL,
-  `nombre` varchar(45) NOT NULL,
+  `vino` varchar(45) NOT NULL,
   `bodega` int(11) NOT NULL,
   `anio` int(11) NOT NULL,
   `maridaje` varchar(45) NOT NULL,
@@ -92,7 +92,7 @@ CREATE TABLE `vinos` (
 -- Dumping data for table `vinos`
 --
 
-INSERT INTO `vinos` (`id`, `nombre`, `bodega`, `anio`, `maridaje`, `cepa`, `stock`, `precio`, `caracteristica`, `recomendado`) VALUES
+INSERT INTO `vinos` (`id`, `vino`, `bodega`, `anio`, `maridaje`, `cepa`, `stock`, `precio`, `caracteristica`, `recomendado`) VALUES
 (1, 'Cordon Blanco', 6, 2021, 'Carne', 'Syrah', 12, 2500, 'Este vino presenta características muy diferenciables que, sobre ciertos umbrales, recuerdan al lugar de origen: vinos más delicados en color, aromas exóticos y sabores con taninos suaves de su breve crianza en roble.', 0),
 (2, 'Angelica Zapata', 5, 2022, 'Pescado', 'Merlot', 9, 4000, 'Es un vino elegante y complejo de color rojo violáceo con destellos rubíes, de nariz delicada, donde sobresalen aromas que recuerdan a de frutos rojos del bosque y notas suaves de especias como pimienta negra y clavo de olor, aportados por las uvas del viñedo La Pirámide, y aromas a frutos rojos y negros maduros como cassis y grosellas aportados por las uvas de Adrianna.', 1),
 (3, 'Cordon Blanco', 6, 2021, 'Pastas', 'Sauvignon Blanc', 4, 6500, 'Es un delicado vino joven de baja graduación alcohólica. De uvas cosechadas temprano para conservar su acidez y sabor a fruta fresca, es ideal para acompañar platos suaves en donde destacamos el equilibrio.', 1),
@@ -103,7 +103,7 @@ INSERT INTO `vinos` (`id`, `nombre`, `bodega`, `anio`, `maridaje`, `cepa`, `stoc
 (8, 'Antología XXXVIII', 8, 2023, 'Pastas', 'Malbec', 20, 2500, 'Rojo muy intenso, con matiz azulado. Regala una nariz con acentos florales de violeta, combinados con otros –frutales- de cereza y guinda. También, surgen notas de menta y especias. En boca, se aprecia la jugosidad de la uva Malbec (mayoritaria en el corte), así como también la riqueza de sus aromas. Redondo, de gran longitud, destaca su persistente y sedoso final.', 1),
 (9, 'Fond de Cave Gran Reserva', 9, 2021, 'Carne negra', 'Cabernet sauvignon', 5, 5500, 'De color rojo granate con destellos oscuros, sus primeros aromas recuerdan a frutas negras maduras, sintiéndose luego el pimiento verde, que aporta frescura con un sutil carácter herbáceo. En boca presenta sabor a almendras tostadas y frutas acarameladas que acompañan una envolvente armonía entre acidez y tenacidad. En el paladar queda el recuerdo de su paso sedoso.', 0),
 (10, 'Salentein Primus', 7, 2020, 'Carne blanca', 'Chardonnay', 15, 3500, 'Presenta un color amarillo dorado con reflejos verdosos, brillante. En nariz es intenso, dulce, aromas a frutas que se combinan con notas florales. Su paso por roble francés le otorga complejidad. En boca es amplio, untuoso y de gran concentración. Posee marcada acidez natural y un prolongado y elegante final.', 1),
-(11, 'Iscay', 9, 2020, 'Carne Rojas', 'Pescado', 2, 7500, 'De color rojo profundo con aromas aciruelados en nariz, este vino entrega notas florales y un toque de pimienta blanca. En boca es fresco, con taninos dulces que hacen de este blend un ejemplar elegante.', 0),
+(11, 'Iscay', 9, 2020, 'Carne Rojas', 'Pinot Noir', 2, 7500, 'De color rojo profundo con aromas aciruelados en nariz, este vino entrega notas florales y un toque de pimienta blanca. En boca es fresco, con taninos dulces que hacen de este blend un ejemplar elegante.', 0),
 (12, 'Manos', 9, 2020, 'Carne Rojas', 'Malbec', 2, 7500, 'Color rojo rubí profundo con intensos aromas de frutos rojos de ciruela, guinda y regaliz. Boca exquisita, de gran dulzura, con reminiscencias de higos y cassis. Un final complejo largo y persistente, característico de los grandes vinos.', 0),
 (13, 'La linda', 10, 2021, 'Carne blancas', 'Pinot Noir', 23, 5440, 'De aromas intensos a flores blancas y frutas tropicales. Su paladar es expresivo y perfumado, de paso fluido y refrescante. Es un vino con gracia, vibrante y directo, con tipicidad varietal inconfundible y final cítrico persistente y agradable.', 1),
 (14, 'Luigi Bosca', 10, 2021, 'Carne blancas', 'Rosé', 23, 5440, 'Sus aromas son vibrantes, con notas de frutas rojas, membrillo, miel y flores blancas. En boca es vivaz y refrescante, de paladar franco y tenso. Es un rosado voluptuoso, con agarre y un carácter expresivo y bien sutil. De buen cuerpo, final persistente y delicado.', 1),

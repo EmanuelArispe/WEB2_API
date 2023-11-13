@@ -29,27 +29,28 @@ class WineApiController extends ApiController{
         return $this->authHelper;
     }
 
-    function getAll(){      
+    function getAll(){    
+
         $order = VerifyHelpers::queryOrder($_GET);
         $sort= VerifyHelpers::querySort($_GET,$this->getModel()->getColumns(MYSQL_TABLEPROD));
 
-        $page = VerifyHelpers::queryPage($_GET, $this->getModel()->getContElem(MYSQL_TABLEPROD));
+        $elem = VerifyHelpers::queryElem($_GET, $this->getModel()->getContElem(MYSQL_TABLEPROD));
         $limit = VerifyHelpers::queryLimit($_GET, $this->getModel()->getContElem(MYSQL_TABLEPROD));
+
 
         $filter = VerifyHelpers::queryFilter($_GET, $this->getModel()->getColumns(MYSQL_TABLEPROD));
         $value = VerifyHelpers::queryValue($_GET);
         $operator = VerifyHelpers::queryOperation($_GET);
 
-        var_dump($_GET["value"]);
-        var_dump(is_string($_GET["value"]));
 
         $arrayParams = array(   "order"     => ($order)      ? $_GET["order"]     : null,
                                 "sort"      => ($sort)       ? $_GET["sort"]      : null,
-                                "page"      => ($page)       ? $_GET["page"]      : null,
+                                "elem"      => ($elem)       ? $_GET["elem"]      : null,
                                 "limit"     => ($limit)      ? $_GET["limit"]     : null,
                                 "filter"    => ($filter)     ? $_GET["filter"]    : null,
                                 "value"     => ($value)      ? $_GET["value"]     : null,
                                 "operator"  => ($operator)   ? $_GET["operator"]  : null);
+
 
         $items = $this->getModel()->getWineList($arrayParams);
 
@@ -71,7 +72,7 @@ class WineApiController extends ApiController{
 
     function deleteWine($params = []){       
         $id = $params[':ID'];
-        $wine = $this->getModel()->getWine($id);
+        $wine = $this->getModel()->getOnlyWine($id);
 
         if (!empty($wine)) {
             $this->getModel()->deleteWine($id);
@@ -92,29 +93,29 @@ class WineApiController extends ApiController{
 
         $body = $this->getData();
 
-        if(!VerifyHelpers::verifyData($body)){
-            $this->getView()->response(['msg' => 'No hay elementos para agregar'], 404);
+        $arrayValue = array ('vino'           => $body->vino,
+                             'bodega'         => $body->bodega,
+                             'maridaje'       => $body->maridaje,
+                             'cepa'           => $body->cepa,
+                             'anio'           => $body->anio,
+                             'stock'          => $body->stock,
+                             'precio'         => $body->precio,
+                             'caracteristica' => $body->caracteristica,
+                             'recomendado'    => ($body->recomendado) ? 1:0);
+
+        if(!VerifyHelpers::verifyData($arrayValue)){
+            $this->getView()->response(['msg' => 'Por favor completar todos los campos'], 404);
             return;
         }
 
-        $nombre = $body->nombre;
-        $bodega = $body->bodega;
-        $maridaje = $body->maridaje;
-        $cepa = $body->cepa;
-        $anio = $body->anio;
-        $stock = $body->stock;
-        $precio = $body->precio;
-        $caracteristica = $body->caracteristica;
-        $recomendado = $body->recomendado;
-
-        $cellar = $this->getModelCellar()->getCellar($bodega);
+        $cellar = $this->getModelCellar()->getCellar($arrayValue['bodega']);
 
         if(empty($cellar)){
-            $this->getView()->response(['msg' => 'La bodega con con el ID = '.$bodega.' No existe'],404);
+            $this->getView()->response(['msg' => 'La bodega con con el ID = '.$arrayValue['bodega'].' No existe'],404);
             return;
         }
 
-        $id = $this->getModel()->addWine($nombre, $bodega, $anio, $maridaje, $cepa, $stock, $precio, $caracteristica, $recomendado);
+        $id = $this->getModel()->addWine($arrayValue);
         if(!empty($id)){
             $this->getView()->response(['msg' => 'El vino fue creado con exito con el ID = ' . $id], 201);
         }else {
@@ -141,7 +142,7 @@ class WineApiController extends ApiController{
             return;
         }
     
-        $wine = $this->getModel()->getWine($id);
+        $wine = $this->getModel()->getOnlyWine($id);
     
         if (empty($wine)) {
             $this->getView()->response(['msg' => 'No se puedo actualizar el ID = ' . $id . ' No existe'], 404);
@@ -149,7 +150,7 @@ class WineApiController extends ApiController{
         }
     
         $body = $this->getData();
-        $nombre = $body->nombre ?? $wine->nombre;
+        $vino = $body->vino ?? $wine->vino;
         $bodega = $body->bodega ?? $wine->bodega;
         $maridaje = $body->maridaje ?? $wine->maridaje;
         $cepa = $body->cepa ?? $wine->cepa;
@@ -160,7 +161,7 @@ class WineApiController extends ApiController{
         $recomendado = $body->recomendado ?? $wine->recomendado;
         
 
-        $result = $this->getModel()->upDateWine($nombre, $bodega, $anio, $maridaje, $cepa, $stock, $precio, $caracteristica, $recomendado, $id);
+        $result = $this->getModel()->upDateWine($vino, $bodega, $anio, $maridaje, $cepa, $stock, $precio, $caracteristica, $recomendado, $id);
     
         if ($result) {
             $this->getView()->response(['msg' => 'El vino con ID = ' . $id . ' fue actualizada con exito'], 200);
