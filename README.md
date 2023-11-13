@@ -11,25 +11,33 @@ URL: `http://localhost/WEB2_API/api/wines`
 `GET /wines`
 
     Obtiene una lista con todos los productos disponibles.
+    Por defecto la lista se encuentra ordenada por ID en forma descendente.
 
-`GET /wines?sort=nombre&order=desc`
+# Orden
+`GET /wines?sort=vino&order=desc`
 
-    Obtiene una lista con todos los productos disponibles ordenados por una columna y orden determinado.
+    Obtiene una lista con todos los productos disponibles ordenados por un campo y un orden determinado. 
+    De no existir el campo y/o el orden devuelve la lista ordenada por defecto.
 
-`GET /wines?page=6&limit=3`
+# Paginacion
+
+`GET /wines?elem=6&limit=3`
 
     Obtiene una lista de tamaño limitado por los parametros de paginacion. 
-    Page determina el producto desde el que inicia y limit la cantidad a mostrar.
+    elem: determina el producto desde el que inicia. 
+    limit: la cantidad de elementos a mostrar.
 
+# Filtro
 `GET /wines?filter=precio&value=1000`
 
     Obtiene una lista filtrada por el campo deseado. 
-    Ejemplo: Precio = $1000.
-
-    Si se quiere ingresar un operador se debe hacer de la siguiente manera:
+    Ejemplo: Precio = $1000.   
 
 `GET /wines?filter=precio&value=1000&operator=>=`
     Ejemplo: Todos los precios mayores o iguales a 1000-.
+
+# Aclaracion:
+    Si los parametros son erroneos devuelve la lista completa.
 
 ### Response
 
@@ -40,7 +48,7 @@ URL: `http://localhost/WEB2_API/api/wines`
     Content-Type: application/json
     [{
         "id": 1,
-        "nombre": "Cordon Blanco",
+        "vino": "Cordon Blanco",
         "bodega": "Cordon Blanco",
         "cepa": "Syrah",
         "anio": 2021,
@@ -74,22 +82,27 @@ URL: `http://localhost/WEB2_API/api/wines`
     Status: 200 OK
     Content-Type: application/json
 
-    {
-        "id": 3,
-        "nombre": "Cordon Blanco",
-        "bodega": "Cordon Blanco",
-        "cepa": "Sauvignon Blanc",
-        "anio": 2021,
-        "precio": 6500,
-        "stock": 4,
-        "recomendado": 1
+    {"id": 1,
+	"vino": "Cordon Blanco",
+	"bodega": "Cordon blanco",
+	"pais": "Argentina",
+	"region": "Buenos Aires",
+	"maridaje": "Carne",
+	"cepa": "Syrah",
+	"anio": 2021,
+	"stock": 12,
+	"precio": 2500,
+	"caracteristica": "Este vino presenta características muy diferenciables que, sobre ciertos umbrales, 
+                       recuerdan al lugar de origen: vinos más delicados en color, aromas exóticos y 
+                       sabores con taninos suaves de su breve crianza en roble.",
+	"recomendado": 1
     }
 
 #### 404 Not found
 
     HTTP/1.1 404 Not found
     Status: 404 Not found
-    "Producto no encontrado"
+    "El vino con con el ID = 'id' No existe"
 
 
 
@@ -102,16 +115,19 @@ URL: `http://localhost/WEB2_API/api/wines`
 
 
     Crea un nuevo producto.
+    Se envia el siguiente JSON:
 
     {
-        "nombre": String,
-        "bodega": int,
-        "cepa": String,
-        "anio": int,
-        "precio": int,
-        "stock": int,
-        "recomendado": boolean (0-1)
-    }
+    "vino": "String",
+    "bodega": int,
+	"maridaje": String,
+    "cepa": String,
+    "anio": int,
+    "precio": int,
+    "stock": int,
+	"caracteristica" : String,
+    "recomendado": boolean
+}
 
 # Aclaracion:
     El campo bodega tiene que coincidir con ID_BODEGA de la categoria correspondiente
@@ -123,24 +139,22 @@ URL: `http://localhost/WEB2_API/api/wines`
     HTTP/1.1 201 Created
     Status: 201 Created
     Content-Type: application/json
-
-    {
-        "id": "generado por db"
-        "nombre": "Cordon Blanco",
-        "bodega": "1",
-        "cepa": "Sauvignon Blanc",
-        "anio": 2021,
-        "precio": 6500,
-        "stock": 4,
-        "recomendado": 1
-    }
+    
+    "El vino fue creado con exito con el ID = 'id' "
 
 #### 400 Bad Request
 
     HTTP/1.1 400 Bad Request
     Status: Bad Request
 
-    "El producto no fue creado"
+    1 - 'Por favor completar todos los campos'
+    2 - 'La bodega con con el ID = 'id_bodega' No existe'
+
+#### 401 Unauthorized
+
+    HTTP/1.1 401 Unauthorized
+    Status: 401 Unauthorized
+    "Usuario no autorizado"
 
 ## PUT Modifica un producto
 
@@ -150,17 +164,22 @@ URL: `http://localhost/WEB2_API/api/wines`
 
 `PUT /wines/id + Bearer TOKEN`
 
-    {
-        "nombre": String,
-        "bodega": int,
-        "cepa": String,
-        "anio": int,
-        "precio": int,
-        "stock": int,
-        "recomendado": boolean (0-1)
-    }
+ Se envia el siguiente JSON:
+
+   {
+    "vino": "String",
+    "bodega": int,
+	"maridaje": String,
+    "cepa": String,
+    "anio": int,
+    "precio": int,
+    "stock": int,
+	"caracteristica" : String,
+    "recomendado": boolean
+}
 
 # Aclaracion:
+        Si algun campo no es cargado, no se actualiza. Mantine el valor que tenia.
         El campo bodega tiene que coincidir con ID_BODEGA de la categoria correspondiente
 
 ### Response
@@ -171,29 +190,21 @@ URL: `http://localhost/WEB2_API/api/wines`
     Status: 200 OK
     Content-Type: application/json
 
-    {
-        "id": int,
-        "nombre": "Cordon Blanco",
-        "bodega": "1",
-        "cepa": "Sauvignon Blanc",
-        "anio": 2021,
-        "precio": 6500,
-        "stock": 4,
-        "recomendado": 1
-    }
+    "El vino con ID = ' id ' fue actualizado con exito"
 
 #### 400 Bad Request
 
     HTTP/1.1 400 Bad Request
     Status: Bad Request
 
-    "Ingrese los campos correctamente"
+    "No se puedo actualizar el ID = 'id' No existe"
 
-#### 404 Not found
+#### 401 Unauthorized
 
-    HTTP/1.1 404 Not found
-    Status: 404 Not found
-    "El producto con el 'id' no existe."
+    HTTP/1.1 401 Unauthorized
+    Status: 401 Unauthorized
+    "Usuario no autorizado"
+
 
 ## DELETE Elimina un producto
 
@@ -210,13 +221,13 @@ URL: `http://localhost/WEB2_API/api/wines`
     HTTP/1.1 200 OK
     Status: 200 OK
 
-    "Articulo con 'id' eliminado"
+    "Se elimino con exito el ID = 'id' "
 
 #### 404 Not found
 
     HTTP/1.1 404 Not found
     Status: 404 Not found
-    "'id' no encontrado."
+    "No se puedo eliminar el ID = ' id  ' No existe"
 
 
 ## GET TOKEN
@@ -227,8 +238,8 @@ URL: `http://localhost/WEB2_API/api/wines`
 
     Basic Auth.
 
-    user:" ";
-    password: " ";
+    user:"...";
+    password: "...";
 
     Se solicita token para poder realizar request de PUT y POST
 
@@ -260,15 +271,19 @@ URL: `http://localhost/WEB2_API/api/wines`
 
     Obtiene una lista con todos las categorias disponibles.
 
-`GET /cellars?sort=nombre&order=desc`
+# Orden
+`GET /cellars?sort=bodega&order=desc`
 
-    Obtiene una lista con todos las categorias disponibles ordenados por una columna y orden determinado.
+    Obtiene una lista con todos las categorias disponibles ordenados por un campo y orden determinado.
 
-`GET /cellars?page=6&limit=3`
+# Paginacion
+`GET /cellars?elem=6&limit=3`
 
     Obtiene una lista de tamaño limitado por los parametros de paginacion. 
-    Page determina la categoria desde el que inicia y limit la cantidad a mostrar.
+    elem: determina la categoria desde el que inicia 
+    limit: la cantidad a mostrar.
 
+# Filtro
 `GET /cellars?filter=pais&value=Argentina`
 
     Obtiene una lista filtrada por el campo deseado. 
@@ -278,6 +293,9 @@ URL: `http://localhost/WEB2_API/api/wines`
 
 `GET /cellars?filter=provincia&value=men%&operator=LIKE`
     Ejemplo: Todos las categorias que empiecen la provincia con "med". 
+
+# Aclaracion:
+    Si los parametros son erroneos devuelve la lista completa.
 
 ### Response
 
@@ -291,7 +309,9 @@ URL: `http://localhost/WEB2_API/api/wines`
 		"nombre": "Catena Zapata",
 		"pais": "Argentina",
 		"provincia": "Mendoza",
-		"descripcion": "Nuestra visión consiste en elaborar vinos intensos e inolvidables, verdaderamente expresivos del terroir. La historia de Catena es la historia del vino argentino."
+		"descripcion": "Nuestra visión consiste en elaborar vinos intensos e inolvidables, 
+                        verdaderamente expresivos del terroir. La historia de Catena es la 
+                        historia del vino argentino."
 	    },{
         ...
         }]
@@ -300,7 +320,7 @@ URL: `http://localhost/WEB2_API/api/wines`
 
     HTTP/1.1 204 No content
     Status: 204 No content
-    "No hay elementos para mostrar"
+    "La bodega con con el ID = 'id' No existe"
 
 
 ## GET Obtiene Categoria por id
@@ -361,13 +381,7 @@ URL: `http://localhost/WEB2_API/api/wines`
     Status: 201 Created
     Content-Type: application/json
 
-        {
-        "id_bodega": Autoincremental,
-        "nombre": "Rutini",
-        "pais": "Argentina",
-        "provincia": "Mendoza",
-        "descripcion": "..."
-    }
+    "La bodega fue creada con exito con el ID = 'id'"
 
 #### 400 Bad Request
 
@@ -406,13 +420,7 @@ URL: `http://localhost/WEB2_API/api/wines`
     Status: 200 OK
     Content-Type: application/json
 
-        {
-        "id_bodega": Autoincremental,
-        "nombre": "Rutini",
-        "pais": "Argentina",
-        "provincia": "Mendoza",
-        "descripcion": "Bodega hubicada cerca de la Cordillera de los Andes.."
-    }
+    "La bodega ID = 'id' fue actualizada con exito"
 
 #### 401 Unauthorized
 
@@ -426,13 +434,9 @@ URL: `http://localhost/WEB2_API/api/wines`
     HTTP/1.1 400 Bad Request
     Status: Bad Request
 
-    "Ingrese los campos correctamente"
+    1 - "Ingrese los campos correctamente"
+    2 - "No se puedo actualizar el ID = 'id' No existe"
 
-#### 404 Not found
-
-    HTTP/1.1 404 Not found
-    Status: 404 Not found
-    "No se puedo actualizar el ID = "id" No existe"
 
 ## DELETE Elimina un producto
 

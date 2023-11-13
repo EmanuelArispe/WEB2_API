@@ -59,7 +59,7 @@
             if(!empty($cellar)){
                 $this->getView()->response($cellar,200);
             }else{
-                $this->getView()->response(['msg' => 'La bodega con con el ID = '.$params[':ID'].' No existe'],404);
+                $this->getView()->response(['msg' => 'La bodega con con el ID = '.$params[':ID'].' No existe'],204);
             }
         }
 
@@ -121,14 +121,14 @@
         $id = $params[':ID'] ?? null;
     
         if (empty($id)) {
-            $this->getView()->response(['msg' => 'Ingrese los campos correctamente'], 404);
+            $this->getView()->response(['msg' => 'Ingrese los campos correctamente'], 400);
             return;
         }
     
         $cellar = $this->getModel()->getCellar($id);
     
         if (empty($cellar)) {
-            $this->getView()->response(['msg' => 'No se puedo actualizar el ID = ' . $id . ' No existe'], 404);
+            $this->getView()->response(['msg' => 'No se puedo actualizar el ID = ' . $id . ' No existe'], 400);
             return;
         }
     

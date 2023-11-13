@@ -164,7 +164,7 @@ class WineApiController extends ApiController{
         $result = $this->getModel()->upDateWine($vino, $bodega, $anio, $maridaje, $cepa, $stock, $precio, $caracteristica, $recomendado, $id);
     
         if ($result) {
-            $this->getView()->response(['msg' => 'El vino con ID = ' . $id . ' fue actualizada con exito'], 200);
+            $this->getView()->response(['msg' => 'El vino con ID = ' . $id . ' fue actualizado con exito'], 200);
         } else {
             $this->getView()->response(['msg' => 'Falla en la actualizacion del ID: ' . $id], 500);
         }

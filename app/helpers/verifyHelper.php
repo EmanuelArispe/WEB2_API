@@ -5,7 +5,9 @@ class VerifyHelpers{
     public static function verifyData($data){
         foreach ($data as $elem) {
             if ((!isset($elem)) || (empty($elem))) {
-                return false;
+                if(!is_numeric($elem)){
+                    return false;
+                }
             }
         }
         return true;
